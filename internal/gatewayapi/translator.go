@@ -75,6 +75,9 @@ type Translator struct {
 	// should be merged under the parent GatewayClass.
 	MergeGateways bool
 
+	// GatewayNamespaceMode is true if controller uses gateway namespace mode for infra deployments.
+	GatewayNamespaceMode bool
+
 	// EnvoyPatchPolicyEnabled when the EnvoyPatchPolicy
 	// feature is enabled.
 	EnvoyPatchPolicyEnabled bool
@@ -287,7 +290,11 @@ func (t *Translator) InitIRs(gateways []*GatewayContext) (map[string]*ir.Xds, ma
 	var irKey string
 	for _, gateway := range gateways {
 		gwXdsIR := &ir.Xds{}
-		gwInfraIR := ir.NewInfra()
+		ns := t.Namespace
+		if t.GatewayNamespaceMode {
+			ns = gateway.Gateway.Namespace
+		}
+		gwInfraIR := ir.NewInfra(ns)
 		labels := infrastructureLabels(gateway.Gateway)
 		annotations := infrastructureAnnotations(gateway.Gateway)
 		gwInfraIR.Proxy.GetProxyMetadata().Annotations = annotations

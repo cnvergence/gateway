@@ -45,6 +45,8 @@ func (i *Infra) JSONString() string {
 type ProxyInfra struct {
 	// Metadata defines metadata for the managed proxy infrastructure.
 	Metadata *InfraMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	// Namespace is the namespace used for managed proxy infrastructure.
+	Namespace string `json:"namespace" yaml:"namespace"`
 	// Name is the name used for managed proxy infrastructure.
 	Name string `json:"name" yaml:"name"`
 	// Config defines user-facing configuration of the managed proxy infrastructure.
@@ -123,17 +125,18 @@ const (
 )
 
 // NewInfra returns a new Infra with default parameters.
-func NewInfra() *Infra {
+func NewInfra(ns string) *Infra {
 	return &Infra{
-		Proxy: NewProxyInfra(),
+		Proxy: NewProxyInfra(ns string),
 	}
 }
 
 // NewProxyInfra returns a new ProxyInfra with default parameters.
-func NewProxyInfra() *ProxyInfra {
+func NewProxyInfra(ns string) *ProxyInfra {
 	return &ProxyInfra{
-		Metadata: NewInfraMetadata(),
-		Name:     DefaultProxyName,
+		Metadata:  NewInfraMetadata(),
+		Namespace: ns,
+		Name:      DefaultProxyName,
 	}
 }
 
