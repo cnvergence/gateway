@@ -10,8 +10,9 @@ package tests
 import "sigs.k8s.io/gateway-api/conformance/utils/suite"
 
 var (
-	ConformanceTests   []suite.ConformanceTest
-	UpgradeTests       []suite.ConformanceTest
-	MergeGatewaysTests []suite.ConformanceTest
-	MultipleGCTests    map[string][]suite.ConformanceTest
+	ConformanceTests          []suite.ConformanceTest
+	UpgradeTests              []suite.ConformanceTest
+	MergeGatewaysTests        []suite.ConformanceTest
+	GatewayNamespaceModeTests []suite.ConformanceTest
+	MultipleGCTests           map[string][]suite.ConformanceTest
 )

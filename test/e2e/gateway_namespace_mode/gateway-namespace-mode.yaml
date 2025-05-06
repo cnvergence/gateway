@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: envoy-gateway-config
+  namespace: envoy-gateway-system
+data:
+  envoy-gateway.yaml: |
+    apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: EnvoyGateway
+    provider:
+      kubernetes:
+        deploy:
+          type: GatewayNamespace
+    gateway:
+      controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-1
+  labels:
+    gateway-conformance: ns-1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-2
+  labels:
+    gateway-conformance: ns-2
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-ns-1
+  namespace: ns-1
+spec:
+  gatewayClassName: "{GATEWAY_CLASS_NAME}"
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: Same
+      name: http
+      port: 8080
+      protocol: HTTP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-ns-2
+  namespace: ns-2
+spec:
+  gatewayClassName: "{GATEWAY_CLASS_NAME}"
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: Same
+      name: http
+      port: 8080
+      protocol: HTTP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: route-ns-1
+  namespace: ns-1
+spec:
+  parentRefs:
+  - name: gateway-ns-1
+    sectionName: http
+  rules:
+  - backendRefs:
+    - name: backend-ns-1
+      port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: route-ns-2
+  namespace: ns-2
+spec:
+  parentRefs:
+  - name: gateway-ns-2
+    sectionName: http
+  rules:
+  - backendRefs:
+    - name: backend-ns-2
+      port: 8080
